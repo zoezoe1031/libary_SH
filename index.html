@@ -166,6 +166,21 @@
     // Dynamic Admin Password loading (defaults to admin2026!)
     let adminPassword = localStorage.getItem(`${STORAGE_PREFIX}admin_password`) || 'admin2026!';
 
+    // Default Prize Items (Can be dynamically edited by 사서교사)
+    const DEFAULT_PRIZE_ITEMS = [
+      { id: 'prize-1', name: '블라인드북 1호', count: 1 },
+      { id: 'prize-2', name: '블라인드북 2호', count: 1 },
+      { id: 'prize-3', name: '블라인드북 3호', count: 1 },
+      { id: 'prize-4', name: '블라인드북 4호', count: 1 },
+      { id: 'prize-5', name: '블라인드북 5호', count: 1 },
+      { id: 'prize-6', name: '한정판 도서 1호', count: 1 },
+      { id: 'prize-7', name: '한정판 도서 2호', count: 1 },
+      { id: 'prize-8', name: '한정판 도서 3호', count: 1 },
+      { id: 'prize-9', name: '한정판 도서 4호', count: 1 },
+      { id: 'prize-10', name: '한정판 도서 5호', count: 1 },
+      { id: 'prize-11', name: '독서 마라톤 격려상', count: 10 }
+    ];
+
     const INITIAL_LOGS = [
       {
         id: 'log-1',
@@ -240,6 +255,7 @@
     let currentUser = null;
     let logs = [];
     let registeredUsers = []; // 영구 축적 가상 데이터베이스 회원 테이블
+    let prizeItems = []; // 동적으로 수정 가능한 경품 목록 데이터
     let activeTab = 'main';
     let isAdminUnlocked = false;
     let adminMenu = 'dashboard';
@@ -274,7 +290,6 @@
       if (savedUsers) {
         registeredUsers = JSON.parse(savedUsers);
       } else {
-        // 기존 목업 데이터에 존재하는 사용자들을 회원 테이블의 초기값으로 삽입
         registeredUsers = [
           { id: '20101', name: '김철수', role: 'student', signupDate: '2026-08-03' },
           { id: '20102', name: '이영희', role: 'student', signupDate: '2026-08-03' },
@@ -282,6 +297,15 @@
           { id: '20215', name: '정민우', role: 'student', signupDate: '2026-08-04' }
         ];
         localStorage.setItem(`${STORAGE_PREFIX}users`, JSON.stringify(registeredUsers));
+      }
+
+      // Load Dynamic Prize Items
+      const savedPrizes = localStorage.getItem(`${STORAGE_PREFIX}prize_items`);
+      if (savedPrizes) {
+        prizeItems = JSON.parse(savedPrizes);
+      } else {
+        prizeItems = DEFAULT_PRIZE_ITEMS;
+        localStorage.setItem(`${STORAGE_PREFIX}prize_items`, JSON.stringify(DEFAULT_PRIZE_ITEMS));
       }
 
       // Load logs
@@ -637,10 +661,8 @@
     // DATA SELECTORS & STATISTICS CALCULATION
     // ----------------------------------------------------------------------
     function getUserStats() {
-      // 이제 로그인 기록이 존재하는 'registeredUsers'를 기반으로 데이터를 가공하되, 매칭되는 독서 기록 개수를 연계합니다.
       const statsMap = {};
       
-      // 1. 모든 가입 사용자로 기본 뼈대 형성
       registeredUsers.forEach(user => {
         statsMap[user.id] = {
           id: user.id,
@@ -652,10 +674,8 @@
         };
       });
 
-      // 2. 작성된 로그 정보를 연결하여 카운트와 도서 Set 가공
       logs.forEach(log => {
         if (!statsMap[log.userId]) {
-          // 예외 상황: 가입 회원 테이블에 없는데 일지 기록이 존재하는 경우 복구 처리
           statsMap[log.userId] = {
             id: log.userId,
             name: log.userName,
@@ -664,7 +684,6 @@
             books: new Set(),
             signupDate: log.date
           };
-          // 가입 목록 누적
           registeredUsers.push({
             id: log.userId,
             name: log.userName,
@@ -835,6 +854,15 @@
       const isSubmitted = localStorage.getItem(`${STORAGE_PREFIX}survey_submitted_${currentUser.id}`) === 'true';
       const isPeriod = isSurveyPeriod();
 
+      // 동적 경품 상품 리스트 HTML 생성
+      let prizesHtml = '';
+      prizeItems.forEach(item => {
+        prizesHtml += `<div>🎁 ${item.name} (${item.count}개)</div>`;
+      });
+      if (prizeItems.length === 0) {
+        prizesHtml = '<div>설정된 상품이 없습니다.</div>';
+      }
+
       if (!isPeriod && !isSubmitted) {
         return `
           <div class="max-w-2xl mx-auto my-12 animate-fade-in">
@@ -857,10 +885,17 @@
                 </h4>
                 <p class="text-xs text-slate-600 leading-relaxed">
                   • <strong>참여 리워드:</strong> 만족도 조사를 응답해주신 모든 마라토너분들께 추첨 기회를 부여합니다.<br>
-                  • <strong>선물 종류:</strong> 블라인드북 (1~5호), 한정판 도서 (1~5호), 참여 기념상 등 풍성한 격려 혜택 제공<br>
+                  • <strong>선물 종류:</strong> 도서관에서 사서교사님이 준비해주신 경품 목록 제공<br>
                   • <strong>추첨 우대 수식:</strong> 독서 마라톤 <strong class="text-blue-600">1일 참여기록당 응모권 1장</strong>이 부여됩니다. (하루 여러 번 기록하여도 하루 최대 1개 적용)<br>
                   <span class="text-slate-400 mt-2 block font-mono text-[11px] text-right">* 현재 회원님의 마라톤 유효 응모 일수: ${myUniqueDays}일 (유효 응모권 ${myUniqueDays}장 준비완료)</span>
                 </p>
+              </div>
+
+              <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 text-left">
+                <p class="text-xs font-bold text-slate-500 mb-2">🎁 현재 준비된 경품 목록</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-600 font-medium">
+                  ${prizesHtml}
+                </div>
               </div>
 
               <p class="text-xs text-slate-400">💡 관리자 권한을 획득하시면 노출되는 상단 테스트 컨트롤러에서 <strong>"만족도 조사(8월 25일)"</strong> 버튼을 클릭하여 기간 임의 전환 후 테스트하실 수 있습니다.</p>
@@ -901,10 +936,8 @@
                 </div>
                 <div class="pt-1">
                   <span class="text-[10px] font-bold text-slate-400 block mb-2 uppercase tracking-wider">추첨 예정 경품 라인업</span>
-                  <div class="grid grid-cols-3 gap-2">
-                    <div class="bg-white p-2 rounded-xl text-center border text-[10px] font-bold text-slate-700 shadow-2xs">🎁 블라인드북 1~5호</div>
-                    <div class="bg-white p-2 rounded-xl text-center border text-[10px] font-bold text-slate-700 shadow-2xs">📘 한정판 도서 1~5호</div>
-                    <div class="bg-white p-2 rounded-xl text-center border text-[10px] font-bold text-slate-700 shadow-2xs">🏅 완주 격려상</div>
+                  <div class="grid grid-cols-2 gap-2 text-xs font-semibold text-slate-700">
+                    ${prizesHtml}
                   </div>
                 </div>
               </div>
@@ -964,10 +997,8 @@
 
               <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 space-y-2">
                 <p class="text-xs font-bold text-slate-500">🎁 경품 당첨 추첨 선물 목록</p>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] text-slate-600 font-medium">
-                  <div>📕 블라인드북 (1~5호)</div>
-                  <div>📙 한정판 명작 선집 (1~5호)</div>
-                  <div>🏅 독서 마라톤 참여상</div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-600 font-medium">
+                  ${prizesHtml}
                 </div>
               </div>
 
@@ -1222,88 +1253,6 @@
       `;
     }
 
-    function getWriteTemplate() {
-      const todayStr = getTodayDateString();
-      const todayLogsCount = logs.filter(l => l.userId === currentUser.id && l.date === todayStr).length;
-      const isPeriod = isMarathonPeriod();
-
-      return `
-        <div class="max-w-3xl mx-auto animate-fade-in">
-          <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden">
-            <div class="p-6 sm:p-8 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">${editingLog ? '독서일지 수정하기' : '오늘의 독서일지 작성'}</h2>
-                <p class="text-xs text-slate-500 mt-1">오늘 읽은 범위와 깨달은 내용을 꼼꼼하게 남겨주세요.</p>
-              </div>
-              <div id="draft-alert-status" class="text-xs text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 font-medium hidden"></div>
-            </div>
-
-            ${!isPeriod ? `
-              <div class="m-6 p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl flex gap-3 text-sm">
-                <i data-lucide="alert-circle" class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"></i>
-                <div>
-                  <strong class="font-bold">독서 일지 기록 제한 상태입니다.</strong>
-                  <p class="text-xs mt-1 text-amber-700">대회 운영 기간(2026.08.03 ~ 08.28)에만 새 일지를 작성 또는 수정할 수 있습니다.</p>
-                </div>
-              </div>
-            ` : ''}
-
-            <form id="log-entry-form" class="p-6 sm:p-8 space-y-6">
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">기록일자 (자동)</label>
-                  <p class="text-sm font-bold text-slate-700 font-mono">${editingLog ? editingLog.date : todayStr}</p>
-                </div>
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">작성자</label>
-                  <p class="text-sm font-bold text-slate-700">${currentUser.name} (${currentUser.role === 'student' ? '학생' : '교직원'})</p>
-                </div>
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">오늘 작성 여부</label>
-                  <p class="text-sm font-bold text-slate-700">${todayLogsCount > 0 ? `${todayLogsCount}회 작성 완료 (추가 작성 가능)` : '미작성 (제출 가능)'}</p>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label for="book-title-input" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">책 제목 <span class="text-rose-500">*</span></label>
-                  <input id="book-title-input" type="text" required ${!isPeriod ? 'disabled' : ''} placeholder="예: 데미안" value="${logForm.title}" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium disabled:bg-slate-100">
-                </div>
-                <div>
-                  <label for="book-author-input" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">저자 <span class="text-rose-500">*</span></label>
-                  <input id="book-author-input" type="text" required ${!isPeriod ? 'disabled' : ''} placeholder="예: 헤르만 헤세" value="${logForm.author}" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium disabled:bg-slate-100">
-                </div>
-              </div>
-
-              <div>
-                <label for="book-range-input" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">읽은 범위 <span class="text-rose-500">*</span></label>
-                <input id="book-range-input" type="text" required ${!isPeriod ? 'disabled' : ''} placeholder="예: 1~50쪽 또는 1장 전체" value="${logForm.range}" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium disabled:bg-slate-100">
-              </div>
-
-              <div>
-                <div class="flex justify-between items-center mb-2">
-                  <label for="content-textarea" class="block text-xs font-bold text-slate-600 uppercase tracking-wider">오늘 읽은 내용과 느낀 점 <span class="text-rose-500">*</span></label>
-                  <span id="char-counter-badge" class="text-xs font-bold px-2 py-1 rounded-full ${logForm.content.length >= 50 ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-600'}">글자 수: ${logForm.content.length} / 최소 50자</span>
-                </div>
-                <textarea id="content-textarea" required ${!isPeriod ? 'disabled' : ''} onpaste="showNotification('공정한 대회를 위해 붙여넣기(Paste)가 금지되어 있습니다. 직접 작성해 주세요!', 'error'); return false;" oncontextmenu="showNotification('공정한 독서 마라톤 환경을 위해 마우스 오른쪽 버튼 메뉴가 제한됩니다.', 'error'); return false;" placeholder="도서를 읽은 후 자유롭게 감상을 남겨 보세요.(최소 50글자 이상 기재 필수)" rows="8" class="w-full p-4 rounded-xl border border-slate-200/80 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium leading-relaxed disabled:bg-slate-100">${logForm.content}</textarea>
-                
-                <p id="validation-warning" class="text-xs text-rose-500 mt-2 flex items-center gap-1.5 font-semibold ${logForm.content.length >= 50 || logForm.content.length === 0 ? 'hidden' : ''}">
-                  <i data-lucide="alert-circle" class="w-4 h-4"></i>독서일지는 최소 50자 이상 기재해야 저장됩니다. (부족한 글자 수: <span id="missing-char-count">${50 - logForm.content.length}</span>자)
-                </p>
-              </div>
-
-              <div class="pt-4 flex flex-col sm:flex-row gap-3">
-                <button type="submit" ${!isPeriod ? '' : ''} class="flex-1 py-4 text-white rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2 ${!isPeriod ? 'bg-slate-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-lg'}">
-                  <i data-lucide="save" class="w-5 h-5"></i>${editingLog ? '수정 내용 저장하기' : '오늘의 일지 등록하기'}
-                </button>
-                ${editingLog ? `<button type="button" onclick="cancelEditing()" class="px-6 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition">수정 취소</button>` : ''}
-              </div>
-            </form>
-          </div>
-        </div>
-      `;
-    }
-
     function getMypageTemplate() {
       const myLogs = logs.filter(l => l.userId === currentUser.id);
       const totalChars = myLogs.reduce((acc, l) => acc + l.length, 0);
@@ -1385,13 +1334,13 @@
           </div>
 
           <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm">
-            <h3 class="text-base font-extrabold text-slate-950 mb-3 tracking-tight">내가 획득한 명예 배지</h3>
+            <h3 class="text-base font-extrabold text-slate-955 mb-3 tracking-tight">내가 획득한 명예 배지</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">${badgesHtml}</div>
           </div>
 
           <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
             <div class="p-6 border-b border-slate-100">
-              <h3 class="text-lg font-extrabold text-slate-950 tracking-tight">내가 작성한 독서일지 목록</h3>
+              <h3 class="text-lg font-extrabold text-slate-955 tracking-tight">내가 작성한 독서일지 목록</h3>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse">
@@ -1436,6 +1385,61 @@
           </div>
         </div>
       `;
+    }
+
+    // ----------------------------------------------------------------------
+    // DYNAMIC PRIZE EDITING HANDLERS
+    // ----------------------------------------------------------------------
+    function addPrizeItem() {
+      const nameInput = document.getElementById('new-prize-name-input');
+      const countInput = document.getElementById('new-prize-count-input');
+
+      const name = nameInput.value.trim();
+      const count = parseInt(countInput.value);
+
+      if (!name) {
+        showNotification('경품 상품명을 정확히 기재해 주세요.', 'error');
+        return;
+      }
+      if (isNaN(count) || count <= 0) {
+        showNotification('경품의 선발 수량은 1개 이상이어야 합니다.', 'error');
+        return;
+      }
+
+      const newItem = {
+        id: `prize-${Date.now()}`,
+        name: name,
+        count: count
+      };
+
+      prizeItems.push(newItem);
+      localStorage.setItem(`${STORAGE_PREFIX}prize_items`, JSON.stringify(prizeItems));
+      
+      nameInput.value = '';
+      countInput.value = '1';
+      
+      showNotification(`"${name}" 상품이 총 ${count}개로 신규 추가되었습니다.`);
+      renderApp();
+    }
+
+    function removePrizeItem(id) {
+      prizeItems = prizeItems.filter(item => item.id !== id);
+      localStorage.setItem(`${STORAGE_PREFIX}prize_items`, JSON.stringify(prizeItems));
+      showNotification('경품 상품이 목록에서 제거되었습니다.');
+      renderApp();
+    }
+
+    function updatePrizeCount(id, value) {
+      const count = parseInt(value);
+      if (isNaN(count) || count <= 0) return;
+      
+      prizeItems = prizeItems.map(item => {
+        if (item.id === id) {
+          return { ...item, count: count };
+        }
+        return item;
+      });
+      localStorage.setItem(`${STORAGE_PREFIX}prize_items`, JSON.stringify(prizeItems));
     }
 
     function getAdminDashboardTemplate() {
@@ -1688,6 +1692,25 @@
           candidateRows = `<p class="text-slate-400 text-center py-6 text-xs">만족도 조사에 응답한 후보군이 존재하지 않습니다.</p>`;
         }
 
+        // 🎟️ 경품 리스트 에디터 빌드
+        let prizeEditorRows = '';
+        prizeItems.forEach(item => {
+          prizeEditorRows += `
+            <div class="flex items-center justify-between gap-4 p-2 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="text-xs font-bold text-slate-700 truncate flex-1">${item.name}</span>
+              <div class="flex items-center gap-2">
+                <input type="number" min="1" value="${item.count}" onchange="updatePrizeCount('${item.id}', this.value)" class="w-16 px-2 py-1 text-xs rounded border border-slate-200 text-center font-bold">
+                <button onclick="removePrizeItem('${item.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded" title="제거">
+                  <i data-lucide="minus-circle" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          `;
+        });
+        if (prizeItems.length === 0) {
+          prizeEditorRows = '<p class="text-center text-xs text-slate-400 py-4">등록된 경품이 없습니다. 아래 폼에서 추가하세요.</p>';
+        }
+
         let winnersDashboard = '';
         if (winners && winners.length > 0) {
           let winnersRows = '';
@@ -1748,21 +1771,52 @@
 
         viewBody = `
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
-            <!-- Left Side: Candidates list -->
-            <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-5 flex flex-col justify-between">
-              <div>
-                <h3 class="font-extrabold text-slate-900 flex items-center gap-2 mb-1">
-                  <i data-lucide="users" class="w-5 h-5 text-purple-600"></i> 만족도 조사 후보단
-                </h3>
-                <p class="text-xs text-slate-400">설문조사에 완벽히 응한 전체 이용자와 누적 응모권 현황입니다.</p>
-              </div>
+            
+            <!-- Left Panel: 1. Survey Candidates & Prize Editor -->
+            <div class="space-y-6">
               
-              <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600">
-                <span>총 설문 참여 수: <strong class="text-slate-900">${candidates.length}명</strong></span>
-                <span>총 투입 응모권: <strong class="text-blue-600">${totalTickets}장</strong></span>
+              <!-- 1. Prize Config Editor (🆕 New added) -->
+              <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-4">
+                <div>
+                  <h3 class="font-extrabold text-slate-900 flex items-center gap-2 mb-1">
+                    <i data-lucide="package" class="w-5 h-5 text-blue-600"></i> 사서교사 경품 목록 구성
+                  </h3>
+                  <p class="text-xs text-slate-400">추첨 시스템에 사용될 동적 상품 품목과 수량을 관리합니다.</p>
+                </div>
+
+                <div class="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+                  ${prizeEditorRows}
+                </div>
+
+                <!-- Add Prize Form -->
+                <div class="pt-3 border-t space-y-2">
+                  <div class="grid grid-cols-3 gap-2">
+                    <input type="text" id="new-prize-name-input" placeholder="새 경품 상품명" class="col-span-2 px-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold">
+                    <input type="number" id="new-prize-count-input" min="1" value="1" placeholder="수량" class="px-2 py-1.5 text-xs rounded-lg border border-slate-200 text-center font-bold focus:outline-none focus:ring-1 focus:ring-blue-500">
+                  </div>
+                  <button onclick="addPrizeItem()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition-colors flex items-center justify-center gap-1">
+                    <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> 경품 상품 등록
+                  </button>
+                </div>
               </div>
 
-              <div class="space-y-2 max-h-[300px] overflow-y-auto">${candidateRows}</div>
+              <!-- 2. Candidates list -->
+              <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-5">
+                <div>
+                  <h3 class="font-extrabold text-slate-900 flex items-center gap-2 mb-1">
+                    <i data-lucide="users" class="w-5 h-5 text-purple-600"></i> 만족도 조사 후보단
+                  </h3>
+                  <p class="text-xs text-slate-400">설문조사에 완벽히 응한 전체 이용자와 누적 응모권 현황입니다.</p>
+                </div>
+                
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600">
+                  <span>총 설문 참여 수: <strong class="text-slate-900">${candidates.length}명</strong></span>
+                  <span>총 투입 응모권: <strong class="text-blue-600">${totalTickets}장</strong></span>
+                </div>
+
+                <div class="space-y-2 max-h-[220px] overflow-y-auto">${candidateRows}</div>
+              </div>
+
             </div>
 
             <!-- Right Side: Draw Action & Results -->
@@ -1772,7 +1826,7 @@
                   <h3 class="font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
                     <i data-lucide="ticket" class="w-5.5 h-5.5 text-blue-600"></i> 마라톤 응모권 기반 자동 추첨 시스템
                   </h3>
-                  <p class="text-xs text-slate-400 mt-0.5">블라인드북 1~5호, 한정판 도서 1~5호, 참여상을 가중치 비례 방식으로 추첨합니다.</p>
+                  <p class="text-xs text-slate-400 mt-0.5">상단 에디터에서 설정된 경품 데이터를 바탕으로 가중치 비례 공정 추첨을 실시합니다.</p>
                 </div>
 
                 ${winnersDashboard}
@@ -1781,7 +1835,6 @@
           </div>
         `;
       } else if (adminMenu === 'filedb') {
-        // Virtual File Database Export/Import Area
         viewBody = `
           <div class="max-w-2xl mx-auto bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm space-y-6 animate-fade-in">
             <div>
@@ -1796,7 +1849,7 @@
               <div class="p-6 bg-blue-50/50 border border-blue-100 rounded-2xl space-y-4 flex flex-col justify-between">
                 <div>
                   <h4 class="font-bold text-slate-800 text-sm flex items-center gap-1.5"><i data-lucide="download-cloud" class="w-4.5 h-4.5 text-blue-600"></i> DB 파일 내보내기 (Backup)</h4>
-                  <p class="text-xs text-slate-500 mt-1 leading-relaxed">현재까지 가입한 회원 목록(학번, 이름, 가입일 등)과 누적된 모든 독서 감상문 일지 로그를 병합한 하나의 단일 백업 파일(<strong class="text-blue-600 font-mono">marathon_db.json</strong>)을 다운로드하여 안전한 PC 하드에 영구 소장합니다.</p>
+                  <p class="text-xs text-slate-500 mt-1 leading-relaxed">현재까지 가입한 회원 목록(학번, 이름, 가입일 등)과 누적된 모든 독서 감상문 일지 로그, 경품 정보 세팅을 병합한 하나의 단일 백업 파일(<strong class="text-blue-600 font-mono">marathon_db.json</strong>)을 다운로드하여 안전한 PC 하드에 영구 소장합니다.</p>
                 </div>
                 <button onclick="exportJSONDatabase()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-xs">
                   marathon_db.json 백업 파일 받기
@@ -1853,7 +1906,6 @@
     // DATABASE EXPORT & IMPORT ENGINE
     // ----------------------------------------------------------------------
     function exportJSONDatabase() {
-      // 회원 및 기록 통합 데이터셋 구축
       const dbBackup = {
         meta: {
           school: '송호고등학교 서로채움도서관',
@@ -1862,6 +1914,7 @@
           exportTime: new Date().toLocaleTimeString('ko-KR')
         },
         users: registeredUsers,
+        prizes: prizeItems,
         logs: logs
       };
 
@@ -1899,6 +1952,10 @@
           // 상태 적용 및 영구 백업 보존
           registeredUsers = parsed.users;
           logs = parsed.logs;
+          if (parsed.prizes) {
+            prizeItems = parsed.prizes;
+            localStorage.setItem(`${STORAGE_PREFIX}prize_items`, JSON.stringify(prizeItems));
+          }
 
           localStorage.setItem(`${STORAGE_PREFIX}users`, JSON.stringify(registeredUsers));
           localStorage.setItem(`${STORAGE_PREFIX}logs`, JSON.stringify(logs));
@@ -1921,16 +1978,23 @@
         return;
       }
 
-      const prizes = [
-        '블라인드북 1호', '블라인드북 2호', '블라인드북 3호', '블라인드북 4호', '블라인드북 5호',
-        '한정판 도서 1호', '한정판 도서 2호', '한정판 도서 3호', '한정판 도서 4호', '한정판 도서 5호',
-        '참여상 A', '참여상 B', '참여상 C', '참여상 D', '참여상 E'
-      ];
+      if (prizeItems.length === 0) {
+        showNotification('추첨에 등록할 경품 상품 목록이 비어 있습니다. 경품을 추가해 주세요.', 'error');
+        return;
+      }
+
+      // 사서교사님이 구성한 동적 경품 라인업을 1차원 순차 배열로 분해 확장
+      const prizesToDraw = [];
+      prizeItems.forEach(item => {
+        for (let count = 1; count <= item.count; count++) {
+          prizesToDraw.push(`${item.name} (당첨순번: ${count}호)`);
+        }
+      });
 
       const winners = [];
       const remainingCandidates = [...candidates];
 
-      for (const prize of prizes) {
+      for (const prize of prizesToDraw) {
         if (remainingCandidates.length === 0) break;
 
         let totalWeight = 0;
@@ -1949,7 +2013,7 @@
         }
 
         const luckyWinner = remainingCandidates[selectedIndex];
-        remainingCandidates.splice(selectedIndex, 1);
+        remainingCandidates.splice(selectedIndex, 1); // 1인 1경품 원칙에 따라 대상군 제외
 
         winners.push({
           prize: prize,
@@ -2334,11 +2398,6 @@
     function editLogByAdminDirect(id) {
       closeModal();
       editLogByAdmin(id);
-    }
-
-    function deleteLogByAdminDirect(id) {
-      closeModal();
-      deleteLogByAdmin(id);
     }
 
     // ----------------------------------------------------------------------
