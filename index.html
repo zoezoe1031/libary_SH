@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts (Cute & Soft Fonts: Gowun Dodum & Jua) -->
+    <!-- Google Fonts (Gowun Dodum & Jua) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
@@ -130,12 +130,6 @@
                 <span class="font-cute text-sm">나의 뱃지 보관함</span>
                 <span id="badgeCountHeaderTag" class="bg-white/20 text-white px-1.5 py-0.5 rounded-full text-[11px] font-sans">0/4</span>
             </button>
-
-            <!-- Teacher Link Modal Trigger Button -->
-            <button id="openTeacherModalBtn" class="text-xs sm:text-sm bg-white hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-full shadow-sm border border-slate-200 transition-all flex items-center space-x-1.5 font-bold hover:text-brand-blue">
-                <i class="fa-solid fa-gear text-brand-teal"></i>
-                <span class="hidden sm:inline font-cute">교사용</span> 연동 설정
-            </button>
         </div>
     </header>
 
@@ -232,7 +226,7 @@
                 </div>
             </div>
 
-            <!-- SECTION 2: Reading Date & Book Details with 1 Page = 1m Rule (Max 500 Pages = 500m) -->
+            <!-- SECTION 2: Reading Date & Book Details -->
             <div class="bg-white/80 p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-xs">
                 <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
                     <h2 class="text-base sm:text-lg font-cute font-bold text-slate-800 flex items-center gap-2">
@@ -285,7 +279,7 @@
                             </p>
                         </div>
 
-                        <!-- Distance Visualizer Gauge in Meters -->
+                        <!-- Distance Visualizer Gauge -->
                         <div class="w-full sm:w-1/2 bg-white p-3.5 rounded-xl border border-teal-200 shadow-sm flex items-center justify-between">
                             <div>
                                 <span class="text-xs text-slate-500 font-bold block">오늘의 마라톤 환산 거리</span>
@@ -383,30 +377,26 @@
                 </div>
             </div>
 
-            <!-- Badges Grid (Extended Distance Targets) -->
+            <!-- Badges Grid -->
             <div class="grid grid-cols-2 gap-3.5 text-center">
-                <!-- Badge 1: 1m -->
                 <div id="badge1" class="p-4 rounded-2xl border border-slate-200 bg-slate-50 opacity-50 grayscale transition-all flex flex-col items-center justify-center">
                     <div class="text-4xl mb-1.5">👟</div>
                     <div class="font-cute font-bold text-sm text-slate-800">출발선 스타트</div>
                     <div class="text-[11px] text-slate-500 mt-1 font-bold bg-white/80 px-2 py-0.5 rounded-full border border-slate-200">목표: 1m 이상</div>
                 </div>
 
-                <!-- Badge 2: 500m -->
                 <div id="badge2" class="p-4 rounded-2xl border border-slate-200 bg-slate-50 opacity-50 grayscale transition-all flex flex-col items-center justify-center">
                     <div class="text-4xl mb-1.5">🎽</div>
                     <div class="font-cute font-bold text-sm text-slate-800">500m 러너</div>
                     <div class="text-[11px] text-slate-500 mt-1 font-bold bg-white/80 px-2 py-0.5 rounded-full border border-slate-200">목표: 500m 달성</div>
                 </div>
 
-                <!-- Badge 3: 1,500m -->
                 <div id="badge3" class="p-4 rounded-2xl border border-slate-200 bg-slate-50 opacity-50 grayscale transition-all flex flex-col items-center justify-center">
                     <div class="text-4xl mb-1.5">🏅</div>
                     <div class="font-cute font-bold text-sm text-slate-800">1,500m 하프마라톤</div>
                     <div class="text-[11px] text-slate-500 mt-1 font-bold bg-white/80 px-2 py-0.5 rounded-full border border-slate-200">목표: 1,500m 달성</div>
                 </div>
 
-                <!-- Badge 4: 3,000m -->
                 <div id="badge4" class="p-4 rounded-2xl border border-slate-200 bg-slate-50 opacity-50 grayscale transition-all flex flex-col items-center justify-center">
                     <div class="text-4xl mb-1.5">🏆</div>
                     <div class="font-cute font-bold text-sm text-slate-800">3,000m 풀마라톤 챔피언</div>
@@ -422,90 +412,6 @@
         </div>
     </div>
 
-    <!-- TEACHER GOOGLE SHEETS SETUP MODAL -->
-    <div id="teacherModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden transition-opacity">
-        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center pb-4 border-b border-slate-100">
-                <div class="flex items-center space-x-2 text-brand-blue font-cute text-lg">
-                    <i class="fa-solid fa-file-excel text-emerald-600 text-xl"></i>
-                    <span>교사용 구글 스프레드시트 연동 설정</span>
-                </div>
-                <button id="closeTeacherModalBtn" class="text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <div class="mt-4 space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
-                <p class="bg-blue-50 p-3 rounded-xl border border-blue-100 text-blue-900">
-                    💡 학생들의 작성 데이터가 저장될 Google 스프레드시트의 <strong>웹 앱 URL</strong>을 등록해 주세요.
-                </p>
-
-                <!-- URL Input -->
-                <div>
-                    <label for="scriptUrlInput" class="block font-bold text-slate-800 mb-1">
-                        Google Apps Script 웹 앱 URL
-                    </label>
-                    <input type="url" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/AKfycbx.../exec"
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-blue text-xs sm:text-sm font-medium">
-                </div>
-
-                <!-- Google Apps Script Guide Accordion -->
-                <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/80 space-y-2">
-                    <div class="font-bold text-slate-800 flex items-center gap-1.5 font-cute text-sm">
-                        <i class="fa-solid fa-code text-brand-coral"></i>
-                        <span>구글 스프레드시트 연동 코드 (Apps Script)</span>
-                    </div>
-                    <p class="text-slate-500 text-xs">
-                        1. 구글 스프레드시트 생성 &gt; [확장 프로그램] &gt; [Apps Script] 클릭<br>
-                        2. 기존 코드 전체를 지우고 아래 코드를 붙여넣기 후 [배포] &gt; [새 배포] 클릭<br>
-                        3. 액세스 권한을 <strong>'모든 사용자(Anyone)'</strong>로 설정하여 배포 후 URL을 복사하세요.
-                    </p>
-                    <div class="relative">
-                        <pre class="bg-slate-900 text-slate-100 p-3 rounded-xl text-[11px] font-mono overflow-x-auto max-h-40 selection:bg-brand-blue">
-function doPost(e) {
-  try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    var data = JSON.parse(e.postData.contents);
-    
-    // 헤더 자동 생성
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(["제출시각", "구분", "학번/부서", "이름", "독서날짜", "책제목", "페이지수", "마라톤거리(m)", "독서일지"]);
-    }
-    
-    sheet.appendRow([
-      new Date(),
-      data.userType,
-      data.info1,
-      data.userName,
-      data.readDate,
-      data.bookTitle,
-      data.pageCount,
-      data.pageCount, // 1페이지 = 1m
-      data.journalText
-    ]);
-    
-    return ContentService.createTextOutput(JSON.stringify({"result": "success"}))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch(error) {
-    return ContentService.createTextOutput(JSON.stringify({"result": "error", "message": error.toString()}))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}</pre>
-                        <button id="copyCodeBtn" type="button" class="absolute top-2 right-2 bg-white/20 hover:bg-white/30 text-white text-[11px] px-2.5 py-1 rounded-md font-sans">
-                            <i class="fa-regular fa-copy mr-1"></i> 코드 복사
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-6 flex justify-end space-x-2">
-                <button id="saveTeacherSettingsBtn" class="px-5 py-2.5 bg-brand-blue hover:bg-brand-darkblue text-white font-cute font-bold rounded-xl text-base transition-all shadow-md">
-                    설정 저장하기
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- NOTIFICATION TOAST -->
     <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none max-w-sm">
         <div id="toastContent" class="flex items-center space-x-3 px-4 py-3.5 rounded-2xl shadow-xl text-sm font-bold text-white bg-slate-900">
@@ -514,7 +420,7 @@ function doPost(e) {
         </div>
     </div>
 
-    <!-- SUCCESS SUBMISSION MODAL WITH RANDOM READING FORTUNE CARD -->
+    <!-- SUCCESS SUBMISSION MODAL -->
     <div id="successModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 text-center shadow-2xl relative overflow-hidden">
             <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-3 animate-bounce">
@@ -561,8 +467,10 @@ function doPost(e) {
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Google Apps Script Web App Endpoint URL
+            const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby46wN95nXpijGDHhliArGS7qjBhdiCg4WjX8BkNktcjXKRGJAuSal5LEWrALL_1DGG/exec';
+            
             let myTotalDistance = parseInt(localStorage.getItem('songho_my_distance')) || 0;
-            let teacherScriptUrl = localStorage.getItem('songho_marathon_script_url') || '';
 
             // DOM Elements
             const form = document.getElementById('marathonForm');
@@ -594,14 +502,7 @@ function doPost(e) {
             const modalBadgeStatusTag = document.getElementById('modalBadgeStatusTag');
             const myModalTotalDist = document.getElementById('myModalTotalDist');
 
-            // Teacher Settings Modal Elements
-            const teacherModal = document.getElementById('teacherModal');
-            const openTeacherModalBtn = document.getElementById('openTeacherModalBtn');
-            const closeTeacherModalBtn = document.getElementById('closeTeacherModalBtn');
-            const scriptUrlInput = document.getElementById('scriptUrlInput');
-            const saveTeacherSettingsBtn = document.getElementById('saveTeacherSettingsBtn');
-            const copyCodeBtn = document.getElementById('copyCodeBtn');
-
+            // Success Modal Elements
             const successModal = document.getElementById('successModal');
             const closeSuccessModalBtn = document.getElementById('closeSuccessModalBtn');
             const fortuneQuote = document.getElementById('fortuneQuote');
@@ -616,7 +517,7 @@ function doPost(e) {
                 "🔥 지치지 않는 당신의 열정, 송호고 독서 마라톤 완주를 향해!"
             ];
 
-            // 1. DATE BOUNDARY & CONSTRAINT LOGIC (Aug 3 to Aug 28, allowing today or yesterday)
+            // 1. DATE BOUNDARY & CONSTRAINT LOGIC
             function setupDateBounds() {
                 const eventStart = '2026-08-03';
                 const eventEnd = '2026-08-28';
@@ -637,13 +538,12 @@ function doPost(e) {
                 readDateInput.max = maxAllowed;
 
                 readDateInput.value = maxAllowed;
-                dateNotice.textContent = `※ 선택 가능 범위: ${minAllowed} ~ ${maxAllowed} (당일 또는 전날 기록만 등록 가능)`;
+                dateNotice.textContent = '※ 선택 가능 범위: ' + minAllowed + ' ~ ' + maxAllowed + ' (당일 또는 전날 기록만 등록 가능)';
             }
 
             setupDateBounds();
-            scriptUrlInput.value = teacherScriptUrl;
 
-            // 2. BADGE SYSTEM (Extended target distance thresholds: 1m, 500m, 1,500m, 3,000m)
+            // 2. BADGE SYSTEM
             function updateMyBadges() {
                 let count = 0;
                 const badges = [
@@ -653,28 +553,42 @@ function doPost(e) {
                     { id: 'badge4', target: 3000 }
                 ];
 
-                badges.forEach(b => {
+                badges.forEach(function(b) {
                     const el = document.getElementById(b.id);
-                    if (myTotalDistance >= b.target) {
-                        count++;
-                        el.classList.remove('opacity-50', 'grayscale', 'bg-slate-50');
-                        el.classList.add('bg-gradient-to-b', 'from-amber-50', 'to-orange-50', 'border-amber-300', 'shadow-md', 'badge-animate');
+                    if (el) {
+                        if (myTotalDistance >= b.target) {
+                            count++;
+                            el.classList.remove('opacity-50', 'grayscale', 'bg-slate-50');
+                            el.classList.add('bg-gradient-to-b', 'from-amber-50', 'to-orange-50', 'border-amber-300', 'shadow-md', 'badge-animate');
+                        }
                     }
                 });
 
-                badgeCountHeaderTag.textContent = `${count}/4`;
-                modalBadgeStatusTag.textContent = `획득 뱃지: ${count} / 4`;
-                myModalTotalDist.textContent = `${myTotalDistance.toLocaleString()} m`;
+                if (badgeCountHeaderTag) badgeCountHeaderTag.textContent = count + '/4';
+                if (modalBadgeStatusTag) modalBadgeStatusTag.textContent = '획득 뱃지: ' + count + ' / 4';
+                if (myModalTotalDist) myModalTotalDist.textContent = myTotalDistance.toLocaleString() + ' m';
             }
 
             updateMyBadges();
 
             // Modal Controls for Badges
-            openBadgeModalBtn.addEventListener('click', () => badgeModal.classList.remove('hidden'));
-            closeBadgeModalBtn.addEventListener('click', () => badgeModal.classList.add('hidden'));
-            closeBadgeModalBtn2.addEventListener('click', () => badgeModal.classList.add('hidden'));
+            if (openBadgeModalBtn) {
+                openBadgeModalBtn.addEventListener('click', function() {
+                    badgeModal.classList.remove('hidden');
+                });
+            }
+            if (closeBadgeModalBtn) {
+                closeBadgeModalBtn.addEventListener('click', function() {
+                    badgeModal.classList.add('hidden');
+                });
+            }
+            if (closeBadgeModalBtn2) {
+                closeBadgeModalBtn2.addEventListener('click', function() {
+                    badgeModal.classList.add('hidden');
+                });
+            }
 
-            // Toggle Identity UI
+            // Toggle Identity UI (Student vs Staff)
             function updateIdentityUI() {
                 if (radioStudent.checked) {
                     labelStudent.className = 'relative flex items-center justify-center p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all border-brand-blue bg-blue-50/50 text-brand-darkblue font-cute text-base sm:text-lg shadow-xs';
@@ -691,33 +605,34 @@ function doPost(e) {
                 }
             }
 
-            labelStudent.addEventListener('click', () => { radioStudent.checked = true; updateIdentityUI(); });
-            labelStaff.addEventListener('click', () => { radioStaff.checked = true; updateIdentityUI(); });
+            if (labelStudent) labelStudent.addEventListener('click', function() { radioStudent.checked = true; updateIdentityUI(); });
+            if (labelStaff) labelStaff.addEventListener('click', function() { radioStaff.checked = true; updateIdentityUI(); });
 
-            // Distance Gauge Sync with max 500 limit (1 Page = 1m)
-            pageCountInput.addEventListener('input', function() {
-                let pages = parseInt(this.value) || 0;
-                
-                if (pages > 500) {
-                    this.value = 500;
-                    pages = 500;
-                    showToast('⚠️ 오버 페이스 방지: 하루 최대 500m(500페이지)까지 등록 가능합니다.', 'warning');
-                }
-                
-                distanceText.textContent = pages.toLocaleString() + ' m';
-            });
-
-            // Prevent Copy / Paste on Journal
-            ['contextmenu', 'paste', 'copy', 'cut', 'drop'].forEach(eventType => {
-                journalText.addEventListener(eventType, function(e) {
-                    e.preventDefault();
-                    showToast('⚠️ 독서일지는 직접 작성해야 합니다. 복사/붙여넣기가 제한됩니다.', 'warning');
-                    return false;
+            // Distance Gauge Sync
+            if (pageCountInput) {
+                pageCountInput.addEventListener('input', function() {
+                    let pages = parseInt(this.value) || 0;
+                    if (pages > 500) {
+                        this.value = 500;
+                        pages = 500;
+                        showToast('⚠️ 오버 페이스 방지: 하루 최대 500m(500페이지)까지 등록 가능합니다.', 'warning');
+                    }
+                    distanceText.textContent = pages.toLocaleString() + ' m';
                 });
-            });
+            }
 
-            // Character Validation
-            journalText.addEventListener('input', validateJournal);
+            // Prevent Copy / Paste on Journal Box
+            if (journalText) {
+                ['contextmenu', 'paste', 'copy', 'cut', 'drop'].forEach(function(eventType) {
+                    journalText.addEventListener(eventType, function(e) {
+                        e.preventDefault();
+                        showToast('⚠️ 독서일지는 직접 작성해야 합니다. 복사/붙여넣기가 제한됩니다.', 'warning');
+                        return false;
+                    });
+                });
+
+                journalText.addEventListener('input', validateJournal);
+            }
 
             function validateJournal() {
                 const length = journalText.value.length;
@@ -741,146 +656,99 @@ function doPost(e) {
                     journalText.classList.remove('border-emerald-400');
                     journalText.classList.add('border-slate-300');
                     validationMsg.className = 'font-bold text-rose-500 flex items-center gap-1';
-                    validationMsg.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${50 - length}자 더 작성해 주세요. (최소 50자 이상)`;
+                    validationMsg.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> ' + (50 - length) + '자 더 작성해 주세요. (최소 50자 이상)';
 
                     submitBtn.disabled = true;
                     submitBtn.className = 'w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-slate-300 to-slate-400 text-white font-cute font-bold text-xl rounded-2xl shadow-none cursor-not-allowed transition-all flex items-center justify-center mx-auto space-x-3 opacity-80';
                 }
             }
 
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
+            if (form) {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
 
-                if (journalText.value.length < 50) {
-                    showToast('독서 일지를 최소 50자 이상 작성해 주세요.', 'warning');
-                    return;
-                }
+                    if (journalText.value.length < 50) {
+                        showToast('독서 일지를 최소 50자 이상 작성해 주세요.', 'warning');
+                        return;
+                    }
 
-                let pageCount = parseInt(pageCountInput.value) || 0;
-                if (pageCount > 500) {
-                    pageCount = 500;
-                }
+                    let pageCount = parseInt(pageCountInput.value) || 0;
+                    if (pageCount > 500) {
+                        pageCount = 500;
+                    }
 
-                const userType = document.querySelector('input[name="userType"]:checked').value;
-                const info1 = info1Input.value.trim();
-                const userName = document.getElementById('userName').value.trim();
+                    const userType = document.querySelector('input[name="userType"]:checked').value;
+                    const info1 = info1Input.value.trim();
+                    const userName = document.getElementById('userName').value.trim();
 
-                const formData = {
-                    userType: userType,
-                    info1: info1,
-                    userName: userName,
-                    readDate: readDateInput.value,
-                    bookTitle: document.getElementById('bookTitle').value.trim(),
-                    pageCount: pageCount,
-                    journalText: journalText.value.trim()
-                };
+                    const formData = {
+                        userType: userType,
+                        info1: info1,
+                        userName: userName,
+                        readDate: readDateInput.value,
+                        bookTitle: document.getElementById('bookTitle').value.trim(),
+                        pageCount: pageCount,
+                        journalText: journalText.value.trim()
+                    };
 
-                submitBtn.disabled = true;
-                submitBtnText.textContent = '전송 중...';
+                    submitBtn.disabled = true;
+                    submitBtnText.textContent = '전송 중...';
 
-                try {
-                    if (teacherScriptUrl) {
-                        await fetch(teacherScriptUrl, {
+                    try {
+                        await fetch(DEFAULT_SCRIPT_URL, {
                             method: 'POST',
                             mode: 'no-cors',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(formData)
                         });
+
+                        // Accumulate personal distance stats
+                        myTotalDistance += pageCount;
+                        localStorage.setItem('songho_my_distance', myTotalDistance);
+
+                        updateMyBadges();
+
+                        // Display Submission Summary
+                        document.getElementById('summaryUser').textContent = formData.userType + ' - ' + formData.info1 + ' ' + formData.userName;
+                        document.getElementById('summaryDate').textContent = formData.readDate;
+                        document.getElementById('summaryBook').textContent = formData.bookTitle;
+                        document.getElementById('summaryDistance').textContent = formData.pageCount.toLocaleString() + ' m';
+
+                        // Pick random fortune quote
+                        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                        fortuneQuote.textContent = '"' + randomQuote + '"';
+
+                        successModal.classList.remove('hidden');
+
+                    } catch (error) {
+                        console.error('Submission Error:', error);
+                        showToast('전송 중 오류 발생: 잠시 후 다시 시도해 주세요.', 'error');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtnText.textContent = '독서일지 전송하기';
                     }
+                });
+            }
 
-                    // Accumulate personal distance stats
-                    myTotalDistance += pageCount;
-                    localStorage.setItem('songho_my_distance', myTotalDistance);
+            if (closeSuccessModalBtn) {
+                closeSuccessModalBtn.addEventListener('click', function() {
+                    successModal.classList.add('hidden');
+                    form.reset();
+                    setupDateBounds();
+                    updateIdentityUI();
+                    validateJournal();
+                    distanceText.textContent = '0 m';
+                });
+            }
 
-                    updateMyBadges();
-
-                    // Display Submission Summary
-                    document.getElementById('summaryUser').textContent = `${formData.userType} - ${formData.info1} ${formData.userName}`;
-                    document.getElementById('summaryDate').textContent = formData.readDate;
-                    document.getElementById('summaryBook').textContent = formData.bookTitle;
-                    document.getElementById('summaryDistance').textContent = formData.pageCount.toLocaleString() + ' m';
-
-                    // Pick random fortune quote
-                    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-                    fortuneQuote.textContent = `"${randomQuote}"`;
-
-                    successModal.classList.remove('hidden');
-
-                    if (!teacherScriptUrl) {
-                        showToast('교사 연동 URL이 설정되지 않아 브라우저에 기록 저장되었습니다.', 'info');
-                    }
-
-                } catch (error) {
-                    console.error('Submission Error:', error);
-                    showToast('전송 중 오류 발생: 잠시 후 다시 시도해 주세요.', 'error');
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtnText.textContent = '독서일지 전송하기';
-                }
-            });
-
-            // Teacher Settings Modals
-            openTeacherModalBtn.addEventListener('click', () => teacherModal.classList.remove('hidden'));
-            closeTeacherModalBtn.addEventListener('click', () => teacherModal.classList.add('hidden'));
-
-            saveTeacherSettingsBtn.addEventListener('click', () => {
-                const url = scriptUrlInput.value.trim();
-                teacherScriptUrl = url;
-                localStorage.setItem('songho_marathon_script_url', url);
-                teacherModal.classList.add('hidden');
-                showToast('교사 연동 URL 설정이 완료되었습니다!', 'success');
-            });
-
-            closeSuccessModalBtn.addEventListener('click', () => {
-                successModal.classList.add('hidden');
-                form.reset();
-                setupDateBounds();
-                updateIdentityUI();
-                validateJournal();
-                distanceText.textContent = '0 m';
-            });
-
-            // Copy Apps Script Code button
-            copyCodeBtn.addEventListener('click', function() {
-                const codeText = `function doPost(e) {
-  try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    var data = JSON.parse(e.postData.contents);
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(["제출시각", "구분", "학번/부서", "이름", "독서날짜", "책제목", "페이지수", "마라톤거리(m)", "독서일지"]);
-    }
-    sheet.appendRow([
-      new Date(),
-      data.userType,
-      data.info1,
-      data.userName,
-      data.readDate,
-      data.bookTitle,
-      data.pageCount,
-      data.pageCount,
-      data.journalText
-    ]);
-    return ContentService.createTextOutput(JSON.stringify({"result": "success"})).setMimeType(ContentService.MimeType.JSON);
-  } catch(error) {
-    return ContentService.createTextOutput(JSON.stringify({"result": "error", "message": error.toString()})).setMimeType(ContentService.MimeType.JSON);
-  }
-}`;
-                const tempTextArea = document.createElement('textarea');
-                tempTextArea.value = codeText;
-                document.body.appendChild(tempTextArea);
-                tempTextArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(tempTextArea);
-
-                showToast('Google Apps Script 코드가 복사되었습니다!', 'success');
-            });
-
-            // Custom Toast Notification System
-            function showToast(msg, type = 'info') {
+            function showToast(msg, type) {
+                if (!type) type = 'info';
                 const toast = document.getElementById('toast');
                 const toastMsg = document.getElementById('toastMsg');
                 const toastIcon = document.getElementById('toastIcon');
                 const toastContent = document.getElementById('toastContent');
+
+                if (!toast || !toastMsg) return;
 
                 toastMsg.textContent = msg;
 
@@ -901,7 +769,7 @@ function doPost(e) {
                 toast.classList.remove('translate-y-20', 'opacity-0');
                 toast.classList.add('translate-y-0', 'opacity-100');
 
-                setTimeout(() => {
+                setTimeout(function() {
                     toast.classList.remove('translate-y-0', 'opacity-100');
                     toast.classList.add('translate-y-20', 'opacity-0');
                 }, 3500);
